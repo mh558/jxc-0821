@@ -1,0 +1,17 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+*.iml
+*.docx
+.idea/
+jxc.sql
+进销存系统项目实战-接口文档（B）.docx
+.idea/.gitignore
+.idea/.name
+.idea/artifacts/
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/libraries/
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+jxc.iml
