@@ -1,13 +1,13 @@
 package com.atguigu.jxc.controller;
 
 import com.atguigu.jxc.domain.ServiceVO;
+import com.atguigu.jxc.domain.SuccessCode;
 import com.atguigu.jxc.entity.Supplier;
 import com.atguigu.jxc.service.SupplierService;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,15 @@ public class SupplierController {
 
     @Autowired
     private SupplierService supplierService;
+
+
+    @PostMapping("getComboboxList")
+    public List<Supplier> getComboboxList(String q){
+
+        System.out.println("q = " + q);
+        List<Supplier> suppliers=  this.supplierService.getComboboxList(q);
+        return suppliers;
+    }
 
     /**
      * 分页查询供应商
@@ -57,16 +66,5 @@ public class SupplierController {
         return supplierService.delete(ids);
     }
 
-    /**
-     * 0.0.1
-     * 删除供应商
-     * @param ids 供应商ids字符串，用逗号分隔
-     * @return
-     */
-    @RequestMapping("/delete")
-    @RequiresPermissions(value = "供应商管理")
-    public ServiceVO delete1(String ids) {
-        System.out.println(1111);
-        return supplierService.delete(ids);
-    }
+
 }

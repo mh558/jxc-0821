@@ -4,7 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.atguigu.jxc.dao.SupplierDao">
-
     <resultMap id="BaseResultMap" type="com.atguigu.jxc.entity.Supplier">
         <result column="supplier_id" property="supplierId" jdbcType="INTEGER" />
         <result column="supplier_name" property="supplierName" jdbcType="VARCHAR" />
@@ -13,6 +12,23 @@
         <result column="address" property="address" jdbcType="VARCHAR" />
         <result column="remarks" property="remarks" jdbcType="VARCHAR" />
     </resultMap>
+
+    <select id="getComboboxList" resultMap="BaseResultMap">
+        SELECT
+        t_supplier.supplier_id,
+        t_supplier.supplier_name,
+        t_supplier.contacts,
+        t_supplier.phone_number,
+        t_supplier.address,
+        t_supplier.remarks
+        FROM
+        t_supplier
+        <where>
+            <if test="supplierName != null and supplierName != ''">
+                t_supplier.supplier_name LIKE CONCAT('%', #{supplierName} ,'%')
+            </if>
+        </where>
+    </select>
 
     <select id="getSupplierList" resultMap="BaseResultMap">
         SELECT

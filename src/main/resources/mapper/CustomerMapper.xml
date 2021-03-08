@@ -6,13 +6,13 @@
 <mapper namespace="com.atguigu.jxc.dao.CustomerDao">
 
     <resultMap id="BaseResultMap" type="com.atguigu.jxc.entity.Customer">
-        <result column="customer_id" property="customerId" jdbcType="INTEGER" />
-        <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
-        <result column="contacts" property="contacts" jdbcType="VARCHAR" />
-        <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR" />
-        <result column="address" property="address" jdbcType="VARCHAR" />
-        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
-    </resultMap>
+    <result column="customer_id" property="customerId" jdbcType="INTEGER" />
+    <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+    <result column="contacts" property="contacts" jdbcType="VARCHAR" />
+    <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+</resultMap>
 
     <select id="getCustomerList" resultMap="BaseResultMap">
         SELECT
