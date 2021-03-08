@@ -56,4 +56,10 @@ public class SupplierController {
     public ServiceVO delete(String ids) {
         return supplierService.delete(ids);
     }
+
+    @RequestMapping("/delete")
+    @RequiresPermissions(value = "供应商管理")
+    public ServiceVO delete1(String ids) {
+        return supplierService.delete(ids);
+    }
 }
