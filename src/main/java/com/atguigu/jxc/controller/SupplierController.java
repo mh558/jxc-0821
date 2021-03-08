@@ -26,7 +26,6 @@ public class SupplierController {
     @PostMapping("getComboboxList")
     public List<Supplier> getComboboxList(String q){
 
-        System.out.println("q = " + q);
         List<Supplier> suppliers=  this.supplierService.getComboboxList(q);
         return suppliers;
     }

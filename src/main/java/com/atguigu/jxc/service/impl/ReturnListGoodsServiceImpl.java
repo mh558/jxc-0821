@@ -41,7 +41,7 @@ public class ReturnListGoodsServiceImpl implements ReturnListGoodsService {
 
         User currentUser = (User) session.getAttribute("currentUser");
         if(currentUser==null || StringUtils.isEmpty(returnListGoodsStr) || StringUtils.isEmpty(returnNumber) ){
-           throw new UntifyException("请进行登录");
+           throw new UntifyException("未登录或非法请求");
         }
         returnList.setReturnNumber(returnNumber);
         returnList.setUserId(currentUser.getUserId());

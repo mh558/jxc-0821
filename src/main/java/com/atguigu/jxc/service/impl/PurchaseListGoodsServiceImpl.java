@@ -47,7 +47,7 @@ public class PurchaseListGoodsServiceImpl implements PurchaseListGoodsService {
 
 
       //添加商品列表
-        if(StringUtils.isEmpty(purchaseListGoodsStr)){
+        if(!StringUtils.isEmpty(purchaseListGoodsStr)){
             List<PurchaseListGoods> purchaseListGoodsList = GSON.fromJson(purchaseListGoodsStr, new TypeToken<List<PurchaseListGoods>>()                      {
             }.getType());
           if(!CollectionUtils.isEmpty(purchaseListGoodsList)){
