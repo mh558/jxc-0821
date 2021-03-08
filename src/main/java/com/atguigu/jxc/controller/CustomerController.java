@@ -23,10 +23,6 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping("newMethod")
-    public String newMethod(){
-        return "newMethod";
-    }
 
 
     /**
