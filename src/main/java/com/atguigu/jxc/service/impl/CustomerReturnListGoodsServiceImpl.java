@@ -4,9 +4,7 @@ import com.atguigu.jxc.dao.CustomerDao;
 import com.atguigu.jxc.dao.CustomerReturnListGoodsDao;
 import com.atguigu.jxc.dao.GoodsDao;
 import com.atguigu.jxc.dao.UserDao;
-import com.atguigu.jxc.domain.CustomerReturnListGoodsVo;
-import com.atguigu.jxc.domain.QueryParam;
-import com.atguigu.jxc.domain.ReturnQueryParam;
+import com.atguigu.jxc.domain.*;
 import com.atguigu.jxc.entity.*;
 import com.atguigu.jxc.service.CustomerReturnListGoodsService;
 import com.google.gson.Gson;
@@ -104,5 +102,13 @@ public class CustomerReturnListGoodsServiceImpl implements CustomerReturnListGoo
         });
 
         return returnListGoodsVos;
+    }
+
+    @Override
+    public List<CountSaleGoodsVo> countReturnListGoods(CountQueryParam countQueryParam) {
+
+        List<CountSaleGoodsVo> list = customerReturnListGoodsDao.countSaleListGoods(countQueryParam);
+        return list;
+
     }
 }

@@ -31,6 +31,46 @@
         <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER" />
     </resultMap>
 
+    <resultMap id="BaseResultMap03" type="com.atguigu.jxc.domain.CountSaleGoodsVo">
+        <result column="number" property="number" jdbcType="VARCHAR" />
+        <result column="date" property="date" jdbcType="VARCHAR" />
+        <result column="customerName" property="customerName" jdbcType="VARCHAR" />
+        <result column="code" property="code" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="model" property="model" jdbcType="VARCHAR" />
+        <result column="goodsType" property="goodsType" jdbcType="VARCHAR" />
+        <result column="unit" property="unit" jdbcType="VARCHAR" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="total" property="total" jdbcType="DECIMAL" />
+        <result column="num" property="num" jdbcType="INTEGER" />
+    </resultMap>
+
+    <select id="countSaleListGoods" resultMap="BaseResultMap03" parameterType="com.atguigu.jxc.domain.CountQueryParam">
+
+        SELECT t1.`return_number` number,t1.`return_date` `date`,t3.`customer_name` customerName,t2.`goods_code` `code`,
+        t2.`goods_name` `name`,t2.`goods_model` model,t4.`goods_type_name` goodsType,t2.`goods_unit` unit,t2.`price` price,
+        t2.`goods_num` num,t2.`total` total
+        FROM t_customer_return_list t1
+        LEFT JOIN t_customer_return_list_goods t2
+        ON t1.`customer_return_list_id`=t2.`customer_return_list_id`
+        LEFT JOIN t_customer t3
+        ON t1.`customer_id`=t3.`customer_id`
+        LEFT JOIN t_goods_type t4
+        ON t2.`goods_type_id`=t4.`goods_type_id`
+        <where>
+            t1.`return_date` &gt;= #{sTime} and t1.`return_date` &lt;= #{eTime}
+            <if test="goodsTypeId != '' and goodsTypeId != null">
+                and t2.`goods_type_id`=#{goodsTypeId}
+            </if>
+            <if test="codeOrName != '' and codeOrName != null">
+                and (t2.`goods_code` like concat('%',#{codeOrName},'%')
+                or
+                t2.`goods_name` like concat('%',#{codeOrName},'%'))
+            </if>
+        </where>
+
+    </select>
+
     <select id="queryListGoods" resultMap="BaseResultMap02">
         select
             customer_return_list_goods_id,goods_id,goods_code,goods_name,goods_model,goods_unit,goods_num,

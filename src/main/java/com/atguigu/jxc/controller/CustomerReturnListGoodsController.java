@@ -5,6 +5,7 @@ import com.atguigu.jxc.entity.CustomerReturnList;
 import com.atguigu.jxc.entity.CustomerReturnListGoods;
 import com.atguigu.jxc.entity.SaleListGoods;
 import com.atguigu.jxc.service.CustomerReturnListGoodsService;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,19 @@ public class CustomerReturnListGoodsController {
 
     @Autowired
     private CustomerReturnListGoodsService customerReturnListGoodsService;
+
+    @PostMapping("/count")
+    public String countReturnListGoods(CountQueryParam countQueryParam){
+
+        List<CountSaleGoodsVo> list  = customerReturnListGoodsService.countReturnListGoods(countQueryParam);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        System.out.println(json);
+
+        return json;
+
+    }
 
 
     @PostMapping("/delete")

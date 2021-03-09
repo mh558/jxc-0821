@@ -1,8 +1,6 @@
 package com.atguigu.jxc.service;
 
-import com.atguigu.jxc.domain.CustomerReturnListGoodsVo;
-import com.atguigu.jxc.domain.QueryParam;
-import com.atguigu.jxc.domain.ReturnQueryParam;
+import com.atguigu.jxc.domain.*;
 import com.atguigu.jxc.entity.CustomerReturnList;
 import com.atguigu.jxc.entity.CustomerReturnListGoods;
 import com.atguigu.jxc.entity.SaleListGoods;
@@ -19,5 +17,7 @@ public interface CustomerReturnListGoodsService {
     List<CustomerReturnListGoods> queryListGoods(Integer returnListId);
 
     List<CustomerReturnListGoodsVo> querReturnList(ReturnQueryParam queryParam);
+
+    List<CountSaleGoodsVo> countReturnListGoods(CountQueryParam countQueryParam);
 
 }

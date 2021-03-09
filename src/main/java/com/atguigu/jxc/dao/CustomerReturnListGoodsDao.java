@@ -1,5 +1,7 @@
 package com.atguigu.jxc.dao;
 
+import com.atguigu.jxc.domain.CountQueryParam;
+import com.atguigu.jxc.domain.CountSaleGoodsVo;
 import com.atguigu.jxc.domain.QueryParam;
 import com.atguigu.jxc.domain.ReturnQueryParam;
 import com.atguigu.jxc.entity.CustomerReturnList;
@@ -23,5 +25,7 @@ public interface CustomerReturnListGoodsDao {
     List<CustomerReturnList> queryReturnList(ReturnQueryParam queryParam);
 
     List<CustomerReturnListGoods> queryListGoods(Integer returnListId);
+
+    List<CountSaleGoodsVo> countSaleListGoods(CountQueryParam countQueryParam);
 
 }

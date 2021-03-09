@@ -19,14 +19,10 @@ public class SaleListGoodsController {
     @Autowired
     private SaleListGoodsService saleListGoodsService;
 
-
     @PostMapping("/count")
     public String countSaleListGoods(CountQueryParam countQueryParam){
 
         List<CountSaleGoodsVo> list = saleListGoodsService.countSaleListGoods(countQueryParam);
-
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println(list);
 
         Gson gson = new Gson();
         String json = gson.toJson(list);
@@ -65,7 +61,6 @@ public class SaleListGoodsController {
         return map;
 
     }
-
 
     @PostMapping("/list")
     public Map<String , Object> querySaleList(QueryParam queryParam){
