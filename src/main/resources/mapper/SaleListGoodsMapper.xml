@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.SaleListGoodsDao">
+
+    <resultMap id="BaseResultMap" type="com.atguigu.jxc.entity.SaleList">
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="customer_id" property="customerId" jdbcType="INTEGER" />
+        <result column="sale_list_id" property="saleListId" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="sale_number" property="saleNumber" jdbcType="VARCHAR" />
+        <result column="sale_date" property="saleDate" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="amount_paid" property="amountPaid" jdbcType="FLOAT"/>
+        <result column="amount_payable" property="amountPayable" jdbcType="FLOAT"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMap02" type="com.atguigu.jxc.entity.SaleListGoods">
+        <result column="sale_list_goods_id" property="saleListGoodsId" jdbcType="INTEGER" />
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+        <result column="goods_model" property="goodsModel" jdbcType="VARCHAR" />
+        <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR" />
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="total" property="total" jdbcType="DECIMAL" />
+        <result column="sale_list_id" property="saleListId" jdbcType="INTEGER" />
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER" />
+    </resultMap>
+
+    <resultMap id="BaseResultMap03" type="com.atguigu.jxc.domain.CountSaleGoodsVo">
+        <result column="number" property="number" jdbcType="VARCHAR" />
+        <result column="date" property="date" jdbcType="VARCHAR" />
+        <result column="customerName" property="customerName" jdbcType="VARCHAR" />
+        <result column="code" property="code" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="model" property="model" jdbcType="VARCHAR" />
+        <result column="goodsType" property="goodsType" jdbcType="VARCHAR" />
+        <result column="unit" property="unit" jdbcType="VARCHAR" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="total" property="total" jdbcType="DECIMAL" />
+        <result column="num" property="num" jdbcType="INTEGER" />
+    </resultMap>
+
+
+    <select id="countSaleListGoods" resultMap="BaseResultMap03" parameterType="com.atguigu.jxc.domain.CountQueryParam">
+
+        SELECT t1.`sale_number` number,t1.`sale_date` `date`,t3.`customer_name` customerName,t2.`goods_code` `code`,
+        t2.`goods_name` `name`,t2.`goods_model` model,t4.`goods_type_name` goodsType,t2.`goods_unit` unit,t2.`price` price,
+        t2.`goods_num` num,t2.`total` total
+        FROM t_sale_list t1
+        LEFT JOIN t_sale_list_goods t2
+        ON t1.`sale_list_id`=t2.`sale_list_goods_id`
+        LEFT JOIN t_customer t3
+        ON t1.`customer_id`=t3.`customer_id`
+        LEFT JOIN t_goods_type t4
+        ON t2.`goods_type_id`=t4.`goods_type_id`
+        <where>
+             t1.`sale_date` &gt;= #{sTime} and t1.`sale_date` &lt;= #{eTime}
+            <if test="goodsTypeId != '' and goodsTypeId != null">
+                and t2.`goods_type_id`=#{goodsTypeId}
+            </if>
+            <if test="codeOrName != '' and codeOrName != null">
+                and (t2.`goods_code` like concat('%',#{codeOrName},'%')
+                or
+                t2.`goods_name` like concat('%',#{codeOrName},'%'))
+            </if>
+        </where>
+
+    </select>
+
+    <update id="updateState">
+        UPDATE t_sale_list SET state=1 WHERE sale_list_id=#{saleListId};
+    </update>
+
+    <delete id="deleteSaleList">
+        delete from t_sale_list where sale_list_id=#{saleListId};
+    </delete>
+
+    <delete id="deleteSaleListGoods">
+        delete from t_sale_list_goods where sale_list_id=#{saleListId};
+    </delete>
+
+    <select id="querySaleListGoods" resultMap="BaseResultMap02">
+        select
+            sale_list_goods_id,goods_id,goods_code,goods_name,goods_model,goods_unit,goods_num,
+            price,total,sale_list_id,goods_type_id
+        from t_sale_list_goods
+        where sale_list_id = #{saleListId};
+    </select>
+
+
+    <select id="querSaleyList" parameterType="com.atguigu.jxc.domain.QueryParam"
+            resultMap="BaseResultMap">
+        select
+        sale_list_id,sale_number,amount_paid,amount_payable,sale_date,state,remarks,customer_id,user_id
+        from t_sale_list
+        <where>
+            <if test="saleNumber != '' and saleNumber != null">
+                sale_number like concat('%',#{saleNumber},'%')
+            </if>
+            <if test="customerId != '' and customerId != null">
+                and customer_id=#{customerId}
+            </if>
+            <if test="state != '' and state != null">
+                and state=#{state}
+            </if>
+            and sale_date &gt;= #{sTime} and sale_date &lt;= #{eTime}
+        </where>
+    </select>
+
+    <insert id="saveSaleList" useGeneratedKeys="true" keyProperty="saleListId"
+            parameterType="com.atguigu.jxc.entity.SaleList">
+
+    INSERT INTO t_sale_list
+        (sale_number,customer_id,amount_paid,amount_payable,sale_date,remarks,state,user_id)
+    VALUES
+        (#{saleNumber},#{customerId},#{amountPaid},#{amountPayable},#{saleDate},#{remarks},#{state},#{userId});
+
+    </insert>
+
+    <insert id="saveSaleListGoods" useGeneratedKeys="true" keyProperty="saleListGoodsId"
+    parameterType="com.atguigu.jxc.entity.SaleListGoods">
+
+        INSERT INTO t_sale_list_goods
+        (goods_id,goods_code,goods_name,goods_model,goods_num,goods_unit,price,total,sale_list_id,goods_type_id)
+        VALUES
+        (#{goodsId},#{goodsCode},#{goodsName},#{goodsModel},#{goodsNum},
+        #{goodsUnit},#{price},#{total},#{saleListId},#{goodsTypeId})
+
+    </insert>
+
+
+</mapper>

@@ -5,6 +5,7 @@
 
 <mapper namespace="com.atguigu.jxc.dao.CustomerDao">
 
+
     <resultMap id="BaseResultMap" type="com.atguigu.jxc.entity.Customer">
         <result column="customer_id" property="customerId" jdbcType="INTEGER" />
         <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
@@ -13,6 +14,23 @@
         <result column="address" property="address" jdbcType="VARCHAR" />
         <result column="remarks" property="remarks" jdbcType="VARCHAR" />
     </resultMap>
+
+    <select id="getComboboxList" resultMap="BaseResultMap">
+         SELECT
+            t_customer.customer_id,
+            t_customer.customer_name,
+            t_customer.contacts,
+            t_customer.phone_number,
+            t_customer.address,
+            t_customer.remarks
+        FROM
+            t_customer
+        <where>
+            <if test="q != null and q != ''">
+                t_customer.customer_name LIKE CONCAT('%', #{q} ,'%')
+            </if>
+        </where>
+    </select>
 
     <select id="getCustomerList" resultMap="BaseResultMap">
         SELECT

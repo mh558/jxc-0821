@@ -2,12 +2,14 @@ package com.atguigu.jxc.dao;
 
 import com.atguigu.jxc.entity.Goods;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * @description 商品信息
  */
+@Component
 public interface GoodsDao {
 
     List<Goods> getGoodsList(@Param("offSet") Integer offSet,@Param("pageRow") Integer pageRow,@Param("goodsName") String goodsName,@Param("goodsTypeId") Integer goodsTypeId);

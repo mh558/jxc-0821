@@ -17,4 +17,6 @@ public interface CustomerService {
 
     ServiceVO delete(String ids);
 
+    List<Customer> getComboboxList(String q);
+
 }
