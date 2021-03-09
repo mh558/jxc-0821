@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.PurChaseDao">
+    <resultMap id="listPurchaseListMap" type="com.atguigu.jxc.vo.PurchaseListVo">
+        <result column="purchase_list_id" property="purchaseListId"/>
+        <result column="purchase_number" property="purchaseNumber"/>
+        <result column="amount_paid" property="amountPaid"/>
+        <result column="amount_payable" property="amountPayable"/>
+        <result column="purchase_date" property="purchaseDate"/>
+        <result column="remarks" property="remarks"/>
+        <result column="state" property="state"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="user_id" property="userId"/>
+        <result column="supplier_name" property="supplierName"/>
+        <result column="true_name" property="trueName"/>
+    </resultMap>
+
+<!--    <resultMap id="goodlistMap" type="com.atguigu.jxc.entity.ReturnListGoods">-->
+<!--        <id column="purchase_list_goods_id" property="purchaseListGoodsId"/>-->
+<!--        <result column="goods_id" property="goodsId"/>-->
+<!--        <result column="goods_code" property="goodsCode"/>-->
+<!--        <result column="goods_name" property="goodsName"/>-->
+<!--        <result column="goods_model" property="goodsModel"/>-->
+<!--        <result column="goods_unit" property="goodsUnit"/>-->
+<!--        <result column="goods_num" property="goodsNum"/>-->
+<!--        <result column="price" property="price"/>-->
+<!--        <result column="total" property="total"/>-->
+<!--        <result column="purchase_list_id" property="purchaseListId"/>-->
+<!--        <result column="goods_type_id" property="goodsTypeId"/>-->
+<!--    </resultMap>-->
+
+
+<!--        void savePurchaseList(PurchaseList purchaseList);-->
+    <insert id="savePurchaseList" useGeneratedKeys="true" keyProperty="purchaseListId" parameterType="com.atguigu.jxc.entity.PurchaseList">
+        INSERT INTO t_purchase_list
+        (purchase_number,amount_paid,amount_payable,purchase_date,remarks,state,supplier_id,user_id)
+        VALUES (#{purchaseNumber}, #{amountPaid}, #{amountPayable}, #{purchaseDate}, #{remarks},#{state},#{supplierId},#{userId});
+    </insert>
+<!--        void savePurchaseListGoods(PurchaseListGoods purchaseListGoods);-->
+    <insert id="savePurchaseListGoods">
+        INSERT INTO t_purchase_list_goods
+        (goods_id,goods_code,goods_name,goods_model,goods_unit,goods_num,price,total,purchase_list_id,goods_type_id)
+        VALUES (#{goodsId},#{goodsCode},#{goodsName},#{goodsModel},#{goodsUnit},#{goodsNum},#{price},#{total},#{purchaseListId},#{goodsTypeId});
+    </insert>
+<!--        PurchaseListVo[] listPurchaseList(String purchaseNumber, Integer supplierId, Integer state, String sTime, String eTime);-->
+    <select id="listPurchaseList" resultMap="listPurchaseListMap">
+        select t1.*,t2.`supplier_name` as supplierName,t3.`true_name` as trueName
+        from t_purchase_list t1
+        left join t_supplier t2
+        on t1.`supplier_id`=t2.`supplier_id`
+        left join t_user t3
+        on t1.`user_id`=t3.`user_id`
+        <where>
+            <if test="purchaseNumber != null and purchaseNumber != ''">
+                t1.`purchase_number` = #{purchaseNumber}
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                and t1.`supplier_id` = #{supplierId}
+            </if>
+            <if test="state != null and state != ''">
+                and t1.`state` = #{state}
+            </if>
+            <if test="sTime != null and sTime != ''">
+                and t1.`purchase_date` > #{sTime}
+            </if>
+            <if test="eTime != null and eTime != ''">
+                and t1.`purchase_date`  &lt; #{eTime};
+            </if>
+        </where>
+
+    </select>
+<!--        List<PurchaseListGoods> goodlist(Integer purchaseListId);-->
+    <select id="goodlist"  resultType="com.atguigu.jxc.entity.PurchaseListGoods">
+        select *
+        from  t_purchase_list_goods
+        where purchase_list_id = #{purchaseListId}
+    </select>
+<!--        void deletePurchaseList(Integer purchaseListId);-->
+    <delete id="deletePurchaseList">
+        delete from
+         t_purchase_list
+         where
+         purchase_list_id = #{purchaseListId};
+    </delete>
+<!--    void deletePurchaseListGoods(Integer purchaseListId);-->
+    <delete id="deletePurchaseListGoods">
+        delete from
+         t_purchase_list_goods
+         where
+         purchase_list_id = #{purchaseListId};
+    </delete>
+<!--        void updateState(Integer purchaseListId);-->
+    <update id="updateState">
+       update t_purchase_list
+       set state = 1
+       where purchase_list_id = #{purchaseListId}
+
+    </update>
+<!--        List<CountPurchaseVo> countPurchase(String sTime, String eTime, Integer goodsTypeId, String codeOrName);-->
+    <select id="countPurchase" resultType="com.atguigu.jxc.vo.CountPurchaseVo">
+        select t2.`goods_code` as code,t2.`goods_name` as name,t2.`goods_model` as model,t2.`goods_unit` as unit,
+                t2.`price` ,t2.`goods_num` as num,t2.`total`,t3.`goods_type_name` as goodsType,t4.`supplier_name`,
+                t1.`purchase_number` as number,t1.`purchase_date` as date
+            from t_purchase_list t1
+            right join t_purchase_list_goods t2
+            on t1.`purchase_list_id` = t2.`purchase_list_id`
+            left join t_goods_type t3
+            on t2.`goods_type_id` =  t3.`goods_type_id`
+            left join t_supplier t4
+            on t4.`supplier_id` = t1.`supplier_id`
+        <where>
+            <if test="goodsTypeId != null and goodsTypeId != ''">
+                t3.`goods_type_id` = #{goodsTypeId}
+            </if>
+            <if test="codeOrName != null and codeOrName != ''">
+                and t2.`goods_name` = #{codeOrName}
+            </if>
+            <if test="codeOrName != null and codeOrName != ''">
+                or t2.`goods_code` = #{codeOrName}
+            </if>
+            <if test="sTime != null and sTime != ''">
+                and t1.`purchase_date` > #{sTime}
+            </if>
+            <if test="eTime != null and eTime != ''">
+                and t1.`purchase_date`  &lt; #{eTime};
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+
+<mapper namespace="com.atguigu.jxc.dao.ReturnDao">
+
+
+
+    <resultMap id="listPurchaseListResultMap" type="com.atguigu.jxc.vo.ReturnListVo">
+        <result column="purchase_list_id" property="purchaseListId"/>
+        <result column="purchase_number" property="purchaseNumber"/>
+        <result column="amount_paid" property="amountPaid"/>
+        <result column="amount_payable" property="amountPayable"/>
+        <result column="purchase_date" property="purchaseDate"/>
+        <result column="remarks" property="remarks"/>
+        <result column="state" property="state"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="user_id" property="userId"/>
+        <result column="supplier_name" property="supplierName"/>
+        <result column="true_name" property="trueName"/>
+    </resultMap>
+
+
+
+<!--        void saveReturnList(ReturnList returnList);-->
+    <insert id="saveReturnList" useGeneratedKeys="true" keyProperty="returnListId" parameterType="com.atguigu.jxc.entity.ReturnList">
+        insert into  t_return_list
+        (return_list_id,return_number,return_date,amount_paid,amount_payable,remarks,state,supplier_id,user_id)
+        values
+        (#{returnListId},#{returnNumber},#{returnDate},#{amountPaid},#{amountPayable},#{remarks},#{state},#{supplierId},#{userId});
+
+    </insert>
+
+<!--        void saveReturnListGoods(ReturnListGoods returnListGoods);-->
+    <insert id="saveReturnListGoods">
+        insert into t_return_list_goods
+        (return_list_goods_id,goods_id,goods_code,goods_name,goods_model,goods_unit,goods_num,price,total,return_list_id,goods_type_id)
+        values
+        (#{returnListGoodsId},#{goodsId},#{goodsCode},#{goodsName},#{goodsModel},#{goodsUnit},#{goodsNum},#{price},#{total},#{returnListId},#{goodsTypeId});
+    </insert>
+<!--        ReturnListVo[] listReturnList(String returnNumber, Integer supplierId, Integer state, String sTime, String eTime);-->
+    <select id="listReturnList" resultMap="listPurchaseListResultMap">
+        select t1.*,t2.`supplier_name` as supplierName,t3.`true_name` as trueName
+        from t_return_list t1
+        left join t_supplier t2
+        on t1.`supplier_id`=t2.`supplier_id`
+        left join t_user t3
+        on t1.`user_id`=t3.`user_id`
+        <where>
+            <if test="returnNumber != null and returnNumber != ''">
+                t1.`return_number` = #{returnNumber}
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                and t1.`supplier_id` = #{supplierId}
+            </if>
+            <if test="state != null and state != ''">
+                and t1.`state` = #{state}
+            </if>
+            <if test="sTime != null and sTime != ''">
+                and t1.`return_date` > #{sTime}
+            </if>
+            <if test="eTime != null and eTime != ''">
+                and t1.`return_date`  &lt; #{eTime};
+            </if>
+        </where>
+
+    </select>
+
+<!--        List<PurchaseListGoods> goodlist(Integer returnListId);-->
+    <select id="goodlist"  resultType="com.atguigu.jxc.entity.ReturnListGoods">
+        select *
+        from  t_return_list_goods
+        where return_list_id = #{returnListId}
+    </select>
+<!--        void deleteReturnList(Integer returnListId);-->
+    <delete id="deleteReturnList">
+        delete from
+         t_return_list
+         where
+         return_list_id = #{returnListId};
+    </delete>
+<!--        void deleteReturnListGoods(Integer returnListId);-->
+    <delete id="deleteReturnListGoods">
+        delete from
+         t_return_list_goods
+         where
+         return_list_id = #{returnListId};
+    </delete>
+<!--        List<CountPurchaseVo> countReturn(String sTime, String eTime, Integer goodsTypeId, String codeOrName);-->
+    <select id="countReturn" resultType="com.atguigu.jxc.vo.CountPurchaseVo">
+        select t2.`goods_code` as code,t2.`goods_name` as name,t2.`goods_model` as model,t2.`goods_unit` as unit,
+        t2.`price` ,t2.`goods_num` as num,t2.`total`,t3.`goods_type_name` as goodsType,t4.`supplier_name`,
+        t1.`return_number` as number,t1.`return_date` as date
+        from t_return_list t1
+        right join t_return_list_goods t2
+        on t1.`return_list_id` = t2.`return_list_id`
+        left join t_goods_type t3
+        on t2.`goods_type_id` =  t3.`goods_type_id`
+        left join t_supplier t4
+        on t4.`supplier_id` = t1.`supplier_id`
+        <where>
+            <if test="goodsTypeId != null and goodsTypeId != ''">
+                t3.`goods_type_id` = #{goodsTypeId}
+            </if>
+            <if test="codeOrName != null and codeOrName != ''">
+                and t2.`goods_name` = #{codeOrName}
+            </if>
+            <if test="codeOrName != null and codeOrName != ''">
+                or t2.`goods_code` = #{codeOrName}
+            </if>
+            <if test="sTime != null and sTime != ''">
+                and t1.`return_date` > #{sTime}
+            </if>
+            <if test="eTime != null and eTime != ''">
+                and t1.`return_date`  &lt; #{eTime};
+            </if>
+        </where>
+    </select>
+</mapper>

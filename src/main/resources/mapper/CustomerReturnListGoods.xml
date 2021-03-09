@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.CustomerReturnListGoodsDao">
+<!--        List<CountPurchaseVo> countCustomerList(String sTime, String eTime, Integer goodsTypeId, String codeOrName);-->
+    <select id="countCustomerList" resultType="com.atguigu.jxc.vo.CountPurchaseVo">
+        select t2.`goods_code` as code,t2.`goods_name` as name,t2.`goods_model` as model,t2.`goods_unit` as unit,
+        t2.`price` ,t2.`goods_num` as num,t2.`total`,t3.`goods_type_name` as goodsType,t4.`supplier_name`,
+        t1.`return_number` as number,t1.`return_date` as date
+        from t_return_list t1
+        right join t_return_list_goods t2
+        on t1.`return_list_id` = t2.`return_list_id`
+        left join t_goods_type t3
+        on t2.`goods_type_id` =  t3.`goods_type_id`
+        left join t_supplier t4
+        on t4.`supplier_id` = t1.`supplier_id`
+        <where>
+            <if test="goodsTypeId != null and goodsTypeId != ''">
+                t3.`goods_type_id` = #{goodsTypeId}
+            </if>
+            <if test="codeOrName != null and codeOrName != ''">
+                and t2.goods_name LIKE CONCAT('%', #{codeOrName} ,'%')
+            </if>
+            <if test="codeOrName != null and codeOrName != ''">
+                or t2.goods_code = #{codeOrName}
+            </if>
+            <if test="sTime != null and sTime != ''">
+                and t1.`return_date` > #{sTime}
+            </if>
+            <if test="eTime != null and eTime != ''">
+                and t1.`return_date`  &lt; #{eTime};
+            </if>
+        </where>
+    </select>
+</mapper>
