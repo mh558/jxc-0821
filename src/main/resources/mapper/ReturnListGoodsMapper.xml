@@ -12,11 +12,11 @@
         <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
         <result column="goods_model" property="goodsModel" jdbcType="VARCHAR" />
         <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR" />
-        <result column="goods_num" property="goodsNum" javaType="INTEGER"/>
-        <result column="price" property="price" javaType="FLOAT"/>
-        <result column="total" property="total" javaType="FLOAT"/>
-        <result column="return_list_id" property="returnListId" javaType="INTEGER"/>
-        <result column="goods_type_id" property="goodsTypeId" javaType="INTEGER"/>
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="FLOAT"/>
+        <result column="total" property="total" jdbcType="FLOAT"/>
+        <result column="return_list_id" property="returnListId" jdbcType="INTEGER"/>
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER"/>
     </resultMap>
 
     <select id="goodsList" resultMap="BaseResultMap">
@@ -40,6 +40,41 @@
              </if>
          </where>
     </select>
+
+    <select id="count" resultMap="BaseResultMap">
+        SELECT
+        return_list_goods_id,
+        goods_id,
+        goods_code,
+        goods_name,
+        goods_model,
+        goods_unit,
+        goods_num,
+        price,
+        total,
+        return_list_id,
+        goods_type_id
+        from
+        t_return_list_goods
+        <where>
+            <if test="list!=null">
+                return_list_id in
+                <foreach collection="list" item="li" separator="," open="(" close=")">
+                    #{li}
+                </foreach>
+            </if>
+            <if test="purListVo.goodsTypeId !=null ">
+                AND goods_type_id = #{purListVo.goodsTypeId}
+            </if>
+            <if test="purListVo.codeOrName!=null and purListVo.codeOrName!=''">
+                AND
+               (goods_code like CONCAT('%',#{purListVo.codeOrName},'%')
+                OR
+                goods_name LIKE CONCAT('%',#{purListVo.codeOrName},'%'))
+            </if>
+        </where>
+    </select>
+
     <delete id="deleteReturnList" parameterType="java.lang.Integer">
         delete from t_return_list_goods where return_list_id = #{returnListId}
     </delete>

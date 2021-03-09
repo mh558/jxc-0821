@@ -4,8 +4,9 @@ import com.atguigu.jxc.domain.ServiceVO;
 import com.atguigu.jxc.domain.SuccessCode;
 import com.atguigu.jxc.entity.PurchaseList;
 import com.atguigu.jxc.entity.PurchaseListGoods;
-import com.atguigu.jxc.entity.User;
 import com.atguigu.jxc.service.PurchaseListGoodsService;
+import com.atguigu.jxc.vo.PurListVo;
+import com.atguigu.jxc.vo.PurchaseGoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,23 @@ public class PurchaseListGoodsController {
     private PurchaseListGoodsService purchaseListGoodsService;
 
 
+
+    @PostMapping("count")
+    public String count(PurListVo purListVo){
+
+      String json=  this.purchaseListGoodsService.count(purListVo);
+      return json;
+    }
+    /**
+     *
+     * @param purchaseListId 进货单Id
+     * @return
+     */
+    @PostMapping("updateState")
+    public ServiceVO updateState(@RequestParam("purchaseListId") Integer purchaseListId){
+        this.purchaseListGoodsService.updateState(purchaseListId);
+        return new ServiceVO(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESS);
+    }
     /**
      *
      * @param purchaseNumber 进货单号
@@ -42,23 +60,14 @@ public class PurchaseListGoodsController {
 
     /**
      *
-     * @param purchaseNumber 进货单号
-     * @param supplierId 供应商Id
-     * @param state  支付状态
-     * @param sTime   单据创建时间区间 开始日期
-     * @param eTime    单据创建时间区间 结束日期
+     * @param goodsVo
      * @return
      */
     @PostMapping("list")
-    public Map<String,Object> list(@RequestParam("purchaseNumber") String purchaseNumber,
-                                   @RequestParam("supplierId") Integer supplierId,
-                                   @RequestParam("state") Integer state,
-                                   @RequestParam("sTime") String sTime,
-                                   @RequestParam("eTime") String eTime
-                                   ){
+    public Map<String,Object> list(PurchaseGoodsVo goodsVo){
         Map<String,Object> map=new HashMap<>();
 
-        List<PurchaseList> lists=this.purchaseListGoodsService.list(purchaseNumber,supplierId,state,sTime,eTime);
+        List<PurchaseList> lists=this.purchaseListGoodsService.list(goodsVo);
         map.put("rows", lists);
         return map;
     }

@@ -21,6 +21,7 @@ import java.util.Map;
 @Service
 public class GoodsServiceImpl implements GoodsService {
 
+
     @Autowired
     private LogService logService;
     @Autowired
@@ -225,4 +226,5 @@ public class GoodsServiceImpl implements GoodsService {
 
         return map;
     }
+
 }

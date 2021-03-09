@@ -1,15 +1,12 @@
 package com.atguigu.jxc.service.impl;
 
-import com.atguigu.jxc.dao.ReturnListDao;
-import com.atguigu.jxc.dao.ReturnListGoodsDao;
-import com.atguigu.jxc.dao.SupplierDao;
-import com.atguigu.jxc.dao.UserDao;
-import com.atguigu.jxc.entity.Log;
-import com.atguigu.jxc.entity.ReturnList;
-import com.atguigu.jxc.entity.ReturnListGoods;
-import com.atguigu.jxc.entity.User;
+import com.atguigu.jxc.dao.*;
+import com.atguigu.jxc.entity.*;
 import com.atguigu.jxc.exception.UntifyException;
 import com.atguigu.jxc.service.*;
+import com.atguigu.jxc.vo.PurListVo;
+import com.atguigu.jxc.vo.PurchaseListGoodsVo;
+import com.atguigu.jxc.vo.ReturnGoodsVo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
-
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,13 +24,15 @@ public class ReturnListGoodsServiceImpl implements ReturnListGoodsService {
     @Autowired
     private ReturnListGoodsDao returnListGoodsDao;
     @Autowired
-    private ReturnListDao returnListDao;
+    private ReturnListService returnListService;
     @Autowired
     private LogService  logService;
     @Autowired
-    private SupplierDao supplierDao;
+    private SupplierService supplierService;
     @Autowired
-    private UserDao userDao;
+    private UserService userService;
+    @Autowired
+    private GoodsTypeService goodsTypeService;
 
     private final static Gson GSON=new Gson();
 
@@ -50,7 +47,7 @@ public class ReturnListGoodsServiceImpl implements ReturnListGoodsService {
         }
         returnList.setReturnNumber(returnNumber);
         returnList.setUserId(currentUser.getUserId());
-        this.returnListDao.saveReturnList(returnList);
+        this.returnListService.saveReturnList(returnList);
 
         List<ReturnListGoods> returnListGoods = GSON.fromJson(returnListGoodsStr, new TypeToken<List<ReturnListGoods>>() {
         }.getType());
@@ -66,15 +63,15 @@ public class ReturnListGoodsServiceImpl implements ReturnListGoodsService {
     }
 
     @Override
-    public List<ReturnList> list(String returnNumber, Integer supplierId, Integer state, String sTime, String eTime) {
-      List<ReturnList> returnLists=  this.returnListDao.list(returnNumber,supplierId,state,sTime,eTime);
+    public List<ReturnList> list(ReturnGoodsVo returnGoodsVo) {
+      List<ReturnList> returnLists=  this.returnListService.list(returnGoodsVo);
         this.logService.save(new Log(Log.SELECT_ACTION,"退货单查询"));
         if(CollectionUtils.isEmpty(returnLists)){
           return null;
         }
         return returnLists.stream().map(t -> {
-            t.setSupplierName(this.supplierDao.getSupplierById(t.getSupplierId()).getSupplierName());
-            t.setTrueName(this.userDao.getUserById(t.getUserId()).getTrueName());
+            t.setSupplierName(this.supplierService.getSupplierById(t.getSupplierId()).getSupplierName());
+            t.setTrueName(this.userService.getUserById(t.getUserId()).getTrueName());
             return t;
         }).collect(Collectors.toList());
 
@@ -98,8 +95,64 @@ public class ReturnListGoodsServiceImpl implements ReturnListGoodsService {
         }
         Integer flag=  this.returnListGoodsDao.deleteReturnList(returnListId);
         if(flag>0){
-            this.returnListDao.deleteReturnList(returnListId);
+            this.returnListService.deleteReturnList(returnListId);
         }
         this.logService.save(new Log(Log.DELETE_ACTION,"退货单删除"));
+    }
+
+    @Override
+    public String count(PurListVo purListVo) {
+        String s=null;
+        ReturnGoodsVo returnGoodsVo = new ReturnGoodsVo();
+        returnGoodsVo.setETime(purListVo.getETime());
+        returnGoodsVo.setSTime(purListVo.getSTime());
+        List<ReturnList> list = this.returnListService.list(returnGoodsVo);
+        if(!CollectionUtils.isEmpty(list)){
+
+            List<Integer> collect = list.stream().map(ReturnList :: getReturnListId).collect(Collectors.toList());
+            List<ReturnListGoods> count = this.returnListGoodsDao.count(collect, purListVo);
+            if(CollectionUtils.isEmpty(collect)){
+                return null;
+            }
+
+            s = GSON.toJson(count.stream().map(purchaseListGoods -> {
+
+                PurchaseListGoodsVo purchaseGoodsVo = new PurchaseListGoodsVo();
+                //基本数据
+                purchaseGoodsVo.setCode(purchaseListGoods.getGoodsCode());
+                purchaseGoodsVo.setModel(purchaseListGoods.getGoodsModel());
+                purchaseGoodsVo.setName(purchaseListGoods.getGoodsName());
+                purchaseGoodsVo.setNum(purchaseListGoods.getGoodsNum());
+                purchaseGoodsVo.setPrice(purchaseListGoods.getPrice());
+                purchaseGoodsVo.setTotal(purchaseListGoods.getTotal());
+                purchaseGoodsVo.setUnit(purchaseListGoods.getGoodsUnit());
+
+                //退货单数据查询
+                ReturnList byId = this.returnListService.getById(purchaseListGoods.getReturnListId());
+                if (byId != null) {
+                    purchaseGoodsVo.setDate(byId.getReturnDate());
+                    purchaseGoodsVo.setNumber(byId.getReturnNumber());
+                    Supplier supplierById = this.supplierService.getSupplierById(byId.getSupplierId());
+                    if (supplierById != null) {
+                        purchaseGoodsVo.setSupplierName(supplierById.getSupplierName());
+                    }
+                }
+
+                //退货商品类型查询
+                GoodsType goodsTypeById = this.goodsTypeService.getGoodsTypeById(purchaseListGoods.getGoodsTypeId());
+                if (goodsTypeById != null) {
+                    purchaseGoodsVo.setGoodsType(goodsTypeById.getGoodsTypeName());
+                }
+                return purchaseGoodsVo;
+            }).collect(Collectors.toList()));
+
+        }
+        this.logService.save(new Log(Log.SELECT_ACTION,"退货单统计"));
+        return s;
+    }
+
+    @Override
+    public List<ReturnListGoods> listByDay(List<Integer> collect) {
+        return this.returnListGoodsDao.count(collect, null);
     }
 }

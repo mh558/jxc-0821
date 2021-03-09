@@ -19,4 +19,6 @@ public interface SupplierService {
     ServiceVO delete(String ids);
 
     List<Supplier> getComboboxList(String q);
+
+    Supplier getSupplierById(Integer supplierId);
 }

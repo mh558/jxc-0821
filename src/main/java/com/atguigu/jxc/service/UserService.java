@@ -25,4 +25,6 @@ public interface UserService {
     ServiceVO setRole(Integer userId, String roles);
 
     ServiceVO updatePassword(String newPassword, HttpSession session);
+
+    User getUserById(Integer userId);
 }

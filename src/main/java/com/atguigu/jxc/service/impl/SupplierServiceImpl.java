@@ -88,4 +88,9 @@ public class SupplierServiceImpl implements SupplierService {
 
         return suppliers;
     }
+
+    @Override
+    public Supplier getSupplierById(Integer supplierId) {
+        return this.getSupplierById(supplierId);
+    }
 }

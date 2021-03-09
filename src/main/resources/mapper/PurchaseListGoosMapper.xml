@@ -12,11 +12,11 @@
         <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
         <result column="goods_model" property="goodsModel" jdbcType="VARCHAR" />
         <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR" />
-        <result column="goods_num" property="goodsNum" javaType="INTEGER"/>
-        <result column="price" property="price" javaType="FLOAT"/>
-        <result column="total" property="total" javaType="FLOAT"/>
-        <result column="purchase_list_id" property="purchaseListId" javaType="INTEGER"/>
-        <result column="goods_type_id" property="goodsTypeId" javaType="INTEGER"/>
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="FLOAT"/>
+        <result column="total" property="total" jdbcType="FLOAT"/>
+        <result column="purchase_list_id" property="purchaseListId" jdbcType="INTEGER"/>
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER"/>
     </resultMap>
 
     <select id="goodsList" resultMap="BaseResultMap" >
@@ -38,6 +38,55 @@
         <if test="purchaseListId!=null">
             purchase_list_id = #{purchaseListId}
         </if>
+        </where>
+    </select>
+
+    <select id="count" resultMap="BaseResultMap">
+        SELECT
+        purchase_list_goods_id,
+        goods_id,
+        goods_code,
+        goods_name,
+        goods_model,
+        goods_unit,
+        goods_num,
+        price,
+        total,
+        purchase_list_id,
+        goods_type_id
+        from
+        t_purchase_list_goods
+        <where>
+            <if test="collect!=null">
+                purchase_list_id in
+                <foreach collection="collect" item="col" separator="," open="(" close=")">
+                    #{col}
+                </foreach>
+            </if>
+            <if test="purListVo.goodsTypeId !=null ">
+               AND goods_type_id = #{purListVo.goodsTypeId}
+            </if>
+            <if test="purListVo.codeOrName!=null and purListVo.codeOrName!=''">
+                AND
+                (goods_code like CONCAT('%',#{purListVo.codeOrName},'%')
+                 OR
+                goods_name LIKE CONCAT('%',#{purListVo.codeOrName},'%'))
+            </if>
+        </where>
+    </select>
+
+    <select id="listByDay" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM
+        t_purchase_list_goods
+        <where>
+            <if test="psId != null ">
+                purchase_list_id in
+                <foreach collection="psId" item="ps" separator="," open="(" close=")">
+                    #{ps}
+                </foreach>
+            </if>
         </where>
     </select>
 

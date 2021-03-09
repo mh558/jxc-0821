@@ -93,6 +93,11 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
         return this.getAllGoodsType(-1).toString(); // 根节点默认从-1开始
     }
 
+    @Override
+    public GoodsType getGoodsTypeById(Integer goodsTypeId) {
+        return this.goodsTypeDao.getGoodsTypeById(goodsTypeId);
+    }
+
     /**
      * 递归查询所有商品类别
      * @return
