@@ -78,4 +78,11 @@ public class SupplierServiceImpl implements SupplierService {
         }
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESS);
     }
+
+    @Override
+    public List<Supplier> getComboboxList(String q) {
+//        List<Supplier> supplierList = supplierDao.getComboboxList(q);
+        List<Supplier> supplierList = supplierDao.getSupplierList(0,10,q);
+        return supplierList;
+    }
 }

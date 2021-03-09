@@ -2,6 +2,7 @@ package com.atguigu.jxc.service;
 
 import com.atguigu.jxc.domain.ServiceVO;
 import com.atguigu.jxc.entity.Supplier;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -17,4 +18,6 @@ public interface SupplierService {
     ServiceVO save(Supplier supplier);
 
     ServiceVO delete(String ids);
+
+    List<Supplier> getComboboxList(String q);
 }

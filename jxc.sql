@@ -2,7 +2,8 @@
 SQLyog 企业版 - MySQL GUI v8.14 
 MySQL - 5.5.28 : Database - jxc
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -105,7 +106,7 @@ CREATE TABLE `t_damage_list` (
 
 /*Data for the table `t_damage_list` */
 
-insert  into `t_damage_list`(`damage_list_id`,`damage_number`,`damage_date`,`remarks`,`user_id`) values (1,'BS1550561206988','2019-02-19','',1),(2,'BS1565489147613','2019-08-11','aaaaa',1),(3,'BS1605766247962','2020-11-19','',1),(4,'BS1605766644460','2020-11-19','',1),(5,'BS1605766644460',NULL,NULL,1),(6,'BS1605766644460',NULL,NULL,1),(7,'BS1606111244343','2020-11-23','包装损坏',1);
+  into `t_damage_list`(`damage_list_id`,`damage_number`,`damage_date`,`remarks`,`user_id`) values (1,'BS1550561206988','2019-02-19','',1),(2,'BS1565489147613','2019-08-11','aaaaa',1),(3,'BS1605766247962','2020-11-19','',1),(4,'BS1605766644460','2020-11-19','',1),(5,'BS1605766644460',NULL,NULL,1),(6,'BS1605766644460',NULL,NULL,1),(7,'BS1606111244343','2020-11-23','包装损坏',1);
 
 /*Table structure for table `t_damage_list_goods` */
 
