@@ -2,12 +2,14 @@ package com.atguigu.jxc.dao;
 
 import com.atguigu.jxc.entity.Customer;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * @description 客户dao
  */
+@Component
 public interface CustomerDao {
 
     List<Customer> getCustomerList(@Param("offSet") Integer offSet, @Param("pageRow") Integer pageRow, @Param("customerName") String customerName);
@@ -21,5 +23,7 @@ public interface CustomerDao {
     Customer getCustomerById(Integer customerId);
 
     Integer deleteCustomer(Integer customerId);
+
+    List<Customer> getComboboxList(@Param("q") String q);
 
 }
