@@ -2,7 +2,9 @@ package com.atguigu.jxc.service;
 
 import com.atguigu.jxc.domain.ServiceVO;
 import com.atguigu.jxc.entity.Goods;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,4 +31,5 @@ public interface GoodsService {
     ServiceVO saveStock(Integer goodsId,Integer inventoryQuantity,double purchasingPrice);
 
     Map<String,Object> listAlarm();
+
 }

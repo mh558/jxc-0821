@@ -194,4 +194,9 @@ public class UserServiceImpl implements UserService {
 
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESS);
     }
+
+    @Override
+    public User getUserById(Integer userId) {
+        return this.userDao.getUserById(userId);
+    }
 }

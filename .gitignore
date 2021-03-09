@@ -16,3 +16,8 @@ jxc.sql
 .idea/modules.xml
 .idea/vcs.xml
 jxc.iml
+
+jxc.sql
+.idea
+target
+*.iml

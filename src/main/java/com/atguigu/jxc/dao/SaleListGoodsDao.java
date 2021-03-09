@@ -28,4 +28,7 @@ public interface SaleListGoodsDao {
 
     List<CountSaleGoodsVo> countSaleListGoods(CountQueryParam countQueryParam);
 
+    Integer getSaleDataByDay( List<Integer> saleListIds);
+
+    List<SaleListGoods> list(List<Integer> saleListIds);
 }

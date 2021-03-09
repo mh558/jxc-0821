@@ -78,4 +78,19 @@ public class SupplierServiceImpl implements SupplierService {
         }
         return new ServiceVO<>(SuccessCode.SUCCESS_CODE, SuccessCode.SUCCESS_MESS);
     }
+
+    @Override
+    public List<Supplier> getComboboxList(String q) {
+
+       List<Supplier> suppliers= this.supplierDao.getComboboxList(q);
+       this.logService.save(new Log(Log.SELECT_ACTION,"供应商名称模糊查询"));
+
+
+        return suppliers;
+    }
+
+    @Override
+    public Supplier getSupplierById(Integer supplierId) {
+        return this.getSupplierById(supplierId);
+    }
 }

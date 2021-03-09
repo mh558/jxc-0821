@@ -6,7 +6,9 @@ import com.atguigu.jxc.service.CustomerService;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -20,20 +22,6 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
-
-
-    @PostMapping("/getComboboxList")
-    @RequiresPermissions(value = "客户管理")
-    public List<Customer> getComboboxList(String q){
-
-        System.out.println("-----------------------");
-        System.out.println(q);
-
-        List<Customer> list  = customerService.getComboboxList(q);
-
-        return list;
-
-    }
 
 
 

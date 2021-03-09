@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.PurchaseListDao">
+    <resultMap id="BaseResultMap" type="com.atguigu.jxc.entity.PurchaseList">
+        <result column="purchase_list_id" property="purchaseListId" jdbcType="INTEGER" />
+        <result column="purchase_number" property="purchaseNumber" jdbcType="VARCHAR" />
+        <result column="amount_paid" property="amountPaid" jdbcType="FLOAT" />
+        <result column="amount_payable" property="amountPayable" jdbcType="FLOAT" />
+        <result column="purchase_date" property="purchaseDate" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="state" property="state" javaType="INTEGER"/>
+        <result column="supplier_id" property="supplierId" javaType="INTEGER"/>
+        <result column="user_id" property="userId" javaType="INTEGER"/>
+    </resultMap>
+
+    <select id="list" resultMap="BaseResultMap" >
+        select
+        purchase_list_id,
+        purchase_number,
+        amount_paid,
+        amount_payable,
+        purchase_date,
+        remarks,
+        state,
+        supplier_id,
+        user_id
+        from
+        t_purchase_list
+        <where>
+            <if test="purchaseNumber!=null and purchaseNumber!=''">
+                purchase_number LIKE CONCAT('%', #{purchaseNumber} ,'%')
+            </if>
+            <if test="supplierId!=null">
+                and supplier_id = #{supplierId}
+            </if>
+            <if test="state!=null">
+                and state = #{state}
+            </if>
+            <if test="sTime!=null and sTime!=''">
+                AND purchase_date &gt;= #{sTime}
+            </if>
+            <if test="eTime!=null and eTime!=''">
+                AND purchase_date &lt;= #{eTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap" >
+        select
+        purchase_list_id,
+        purchase_number,
+        amount_paid,
+        amount_payable,
+        purchase_date,
+        remarks,
+        state,
+        supplier_id,
+        user_id
+        from
+        t_purchase_list
+        <where>
+            <if test="purchaseListId!=null">
+                purchase_list_id = #{purchaseListId}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="purchaseListId" parameterType="com.atguigu.jxc.entity.PurchaseList">
+        INSERT INTO t_purchase_list
+        ( purchase_number, amount_paid, amount_payable, purchase_date,remarks,state,supplier_id,user_id)
+        VALUES(#{purchaseNumber}, #{amountPaid},#{amountPayable}, #{purchaseDate},#{remarks},#{state},#{supplierId},#{userId})
+    </insert>
+
+    <delete id="deletePurchaseList" parameterType="java.lang.Integer">
+        delete from t_purchase_list where purchase_list_id = #{purchaseListId}
+    </delete>
+
+    <update id="updateState" parameterType="com.atguigu.jxc.entity.PurchaseList">
+        UPDATE t_purchase_list
+        <set>
+            <if test="purchaseNumber != '' and purchaseNumber != null">
+                purchase_number = #{purchaseNumber},
+            </if>
+            <if test="amountPaid != '' and amountPaid != null">
+                amount_paid = #{amountPaid},
+            </if>
+            <if test="amountPayable != '' and amountPayable != null">
+                amount_payable = #{phoneNumber},
+            </if>
+            <if test="purchaseDate != '' and purchaseDate != null">
+                purchase_date = #{purchaseDate},
+            </if>
+            <if test="remarks != '' and remarks != null">
+                remarks = #{remarks},
+            </if>
+            <if test="state != '' and state != null">
+                state = #{state},
+            </if>
+            <if test="supplierId != '' and supplierId != null">
+                supplier_id = #{supplierId},
+            </if>
+            <if test="userId != '' and userId != null">
+                user_id = #{userId},
+            </if>
+        </set>
+        WHERE purchase_list_id = #{purchaseListId}
+    </update>
+
+
+</mapper>

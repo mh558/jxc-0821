@@ -8,6 +8,7 @@ import com.atguigu.jxc.entity.SaleList;
 import com.atguigu.jxc.entity.SaleListGoods;
 
 import java.util.List;
+import com.atguigu.jxc.vo.DateParam;
 
 public interface SaleListGoodsService {
     void saveSaleListGoods(String saleNumber, SaleList saleList, String saleListGoodsStr);
@@ -21,4 +22,5 @@ public interface SaleListGoodsService {
     void updateState(Integer saleListId);
 
     List<CountSaleGoodsVo> countSaleListGoods(CountQueryParam countQueryParam);
+    String getSaleDataByDay(DateParam dataVo);
 }
