@@ -10,7 +10,7 @@ import com.atguigu.jxc.domain.QueryParam;
 import com.atguigu.jxc.domain.SaleListGoodsVo;
 import com.atguigu.jxc.entity.*;
 import com.atguigu.jxc.exception.SaleListGoodsException;
-import com.atguigu.jxc.service.SaleListGoodsService;
+import com.atguigu.jxc.service.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.BeanUtils;
@@ -29,21 +29,35 @@ import java.util.stream.Collectors;
 public class SaleListGoodsServiceImpl implements SaleListGoodsService {
 
     @Autowired
-    private SaleListGoodsDao saleListGoodsDao;
+    private SaleListGoodsDao         saleListGoodsDao;
     @Autowired
-    private SaleListService saleListService;
+    private SaleListService          saleListService;
     @Autowired
     private PurchaseListGoodsService purchaseListGoodsService;
     @Autowired
-    private PurchaseListService purchaseListService;
+    private PurchaseListService    purchaseListService;
     @Autowired
     private ReturnListGoodsService returnListGoodsService;
     @Autowired
-    private ReturnListService returnListService;
+    private ReturnListService      returnListService;
+    @Autowired
+    private CustomerReturnListGoodsService customerReturnListGoodsService;
+    @Autowired
+    private GoodsDao goodsDao;
+
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private CustomerDao customerDao;
 
     private final static Gson GSON=new Gson();
 
-
+    /**
+     *
+     * @param dataVo
+     * @return 返回统计数据
+     */
     @Override
     public String getSaleDataByDay(DateParam dataVo) {
         SaleListVo saleListVo = new SaleListVo();
@@ -55,15 +69,11 @@ public class SaleListGoodsServiceImpl implements SaleListGoodsService {
             List<Integer> collect = saleLists.stream().map(SaleList :: getSaleListId).collect(Collectors.toList());
             Integer saleDataByDay = this.saleListGoodsDao.getSaleDataByDay(collect);
             saleListVo.setSaleTotal(saleDataByDay);
-            List<SaleListGoods> saleListGoods = this.saleListGoodsDao.list(collect);
-            if(!CollectionUtils.isEmpty(saleListGoods)){
-                List<Double> total = saleListGoods.stream().map(SaleListGoods :: getTotal).collect(Collectors.toList());
-                Integer intValue = total.stream().reduce((a, b) -> a + b).get().intValue();
-                System.out.println(intValue);
-                if(intValue!=null){
-                    profit=intValue;
-                }
+            List<Double> amountPaid = saleLists.stream().map(SaleList :: getAmountPaid).collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(amountPaid)){
+                profit = amountPaid.stream().reduce((a,b)->a+b).get().intValue();
             }
+
         }
 
         //获取进货总量
@@ -72,49 +82,26 @@ public class SaleListGoodsServiceImpl implements SaleListGoodsService {
             List<Integer> psId = purchaseLists.stream().map(PurchaseList :: getPurchaseListId).collect(Collectors.toList());
             Integer count=  this.purchaseListGoodsService.listByDay(psId);
             saleListVo.setPurchasingTotal(count);
-         List<PurchaseListGoods> purchaseListGoods= this.purchaseListGoodsService.queryListByPsId(psId);
-         if(!CollectionUtils.isEmpty(purchaseListGoods)){
-             List<Double> total = purchaseListGoods.stream().map(PurchaseListGoods :: getTotal).collect(Collectors.toList());
-             if(!CollectionUtils.isEmpty(total)){
-                 Integer value = total.stream().reduce((a, b) -> a + b).get().intValue();
-                 System.out.println(value);
-                 if(value!=null){
-                     profit=profit-value;
-                 }
-             }
-         }
+            List<Double> pamountPaid = purchaseLists.stream().map(PurchaseList :: getAmountPaid).collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(pamountPaid)){
+              profit=profit-pamountPaid.stream().reduce((a,b)->a+b).get().intValue();
+
+            }
         }
 
         //获取总盈利
         List<ReturnList> returnLists= this.returnListService.getSaleDataByDay(dataVo);
         if(!CollectionUtils.isEmpty(returnLists)){
-            List<Integer> collect = returnLists.stream().map(ReturnList :: getReturnListId).collect(Collectors.toList());
-            List<ReturnListGoods> returnListGoods= this.returnListGoodsService.listByDay(collect);
-            if(!CollectionUtils.isEmpty(returnListGoods)){
-                List<Double> total = returnListGoods.stream().map(ReturnListGoods :: getTotal).collect(Collectors.toList());
-                if(!CollectionUtils.isEmpty(total)){
-                    Integer value = total.stream().reduce((a, b) -> a + b).get().intValue();
-                    System.out.println(value);
-                    if(value!=null) {
-                       profit=profit-value;
-                    }
-                }
+            List<Double> rAmountPaid = returnLists.stream().map(ReturnList :: getAmountPaid).collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(rAmountPaid)){
+               profit=profit+rAmountPaid.stream().reduce((a,b)->a+b).get().intValue();
             }
         }
+
         saleListVo.setProfit(profit);
         return GSON.toJson(saleListVo);
 
     }
-}
-
-    @Autowired
-    private GoodsDao goodsDao;
-
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private CustomerDao customerDao;
 
     @Override
     @Transactional

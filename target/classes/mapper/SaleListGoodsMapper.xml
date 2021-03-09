@@ -5,19 +5,9 @@
 
 <mapper namespace="com.atguigu.jxc.dao.SaleListGoodsDao">
 
-    <resultMap id="BaseResultMap" type="com.atguigu.jxc.entity.SaleList">
-        <result column="state" property="state" jdbcType="INTEGER" />
-        <result column="customer_id" property="customerId" jdbcType="INTEGER" />
-        <result column="sale_list_id" property="saleListId" jdbcType="INTEGER" />
-        <result column="user_id" property="userId" jdbcType="INTEGER" />
-        <result column="sale_number" property="saleNumber" jdbcType="VARCHAR" />
-        <result column="sale_date" property="saleDate" jdbcType="VARCHAR" />
-        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
-        <result column="amount_paid" property="amountPaid" jdbcType="FLOAT"/>
-        <result column="amount_payable" property="amountPayable" jdbcType="FLOAT"/>
-    </resultMap>
 
-    <resultMap id="BaseResultMap02" type="com.atguigu.jxc.entity.SaleListGoods">
+
+    <resultMap id="BaseResultMap" type="com.atguigu.jxc.entity.SaleListGoods">
         <result column="sale_list_goods_id" property="saleListGoodsId" jdbcType="INTEGER" />
         <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
         <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />

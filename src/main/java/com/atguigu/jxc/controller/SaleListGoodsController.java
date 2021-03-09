@@ -1,6 +1,5 @@
 package com.atguigu.jxc.controller;
 
-<<<<<<< HEAD
 import com.atguigu.jxc.domain.*;
 import com.atguigu.jxc.entity.SaleList;
 import com.atguigu.jxc.entity.SaleListGoods;
