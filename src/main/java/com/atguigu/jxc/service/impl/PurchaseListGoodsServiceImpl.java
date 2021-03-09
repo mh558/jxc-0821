@@ -2,10 +2,9 @@ package com.atguigu.jxc.service.impl;
 
 import com.atguigu.jxc.dao.PurchaseListDao;
 import com.atguigu.jxc.dao.PurchaseListGoodsDao;
-import com.atguigu.jxc.entity.Log;
-import com.atguigu.jxc.entity.PurchaseList;
-import com.atguigu.jxc.entity.PurchaseListGoods;
-import com.atguigu.jxc.entity.User;
+import com.atguigu.jxc.dao.SupplierDao;
+import com.atguigu.jxc.dao.UserDao;
+import com.atguigu.jxc.entity.*;
 import com.atguigu.jxc.service.LogService;
 import com.atguigu.jxc.service.PurchaseListGoodsService;
 import com.google.gson.reflect.TypeToken;
@@ -32,6 +31,10 @@ public class PurchaseListGoodsServiceImpl implements PurchaseListGoodsService {
     private LogService logService;
     @Autowired
     private PurchaseListDao purchaseListDao;
+    @Autowired
+    private SupplierDao supplierDao;
+    @Autowired
+    private UserDao userDao;
 
     private final static Gson GSON=new Gson();
 
@@ -63,8 +66,19 @@ public class PurchaseListGoodsServiceImpl implements PurchaseListGoodsService {
 
     @Override
     public List<PurchaseList> list(String purchaseNumber, Integer supplierId, Integer state, String sTime, String eTime) {
+
+        List<PurchaseList> list = this.purchaseListDao.list(purchaseNumber, supplierId, state, sTime, eTime);
         this.logService.save(new Log(Log.SELECT_ACTION,"进货单查询"));
-     return    this.purchaseListDao.list(purchaseNumber,supplierId,state,sTime,eTime);
+        if(CollectionUtils.isEmpty(list)){
+            return null;
+        }
+        List<PurchaseList> collect = list.stream().map(t -> {
+            Supplier supplierById = this.supplierDao.getSupplierById(t.getSupplierId());
+            t.setSupplierName(supplierById.getSupplierName());
+            t.setTrueName(this.userDao.getUserById(t.getUserId()).getTrueName());
+            return t;
+        }).collect(Collectors.toList());
+        return collect;
 
     }
 

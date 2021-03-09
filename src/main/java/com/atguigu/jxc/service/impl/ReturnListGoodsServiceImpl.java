@@ -2,13 +2,14 @@ package com.atguigu.jxc.service.impl;
 
 import com.atguigu.jxc.dao.ReturnListDao;
 import com.atguigu.jxc.dao.ReturnListGoodsDao;
+import com.atguigu.jxc.dao.SupplierDao;
+import com.atguigu.jxc.dao.UserDao;
 import com.atguigu.jxc.entity.Log;
 import com.atguigu.jxc.entity.ReturnList;
 import com.atguigu.jxc.entity.ReturnListGoods;
 import com.atguigu.jxc.entity.User;
 import com.atguigu.jxc.exception.UntifyException;
-import com.atguigu.jxc.service.LogService;
-import com.atguigu.jxc.service.ReturnListGoodsService;
+import com.atguigu.jxc.service.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,11 @@ public class ReturnListGoodsServiceImpl implements ReturnListGoodsService {
     @Autowired
     private ReturnListDao returnListDao;
     @Autowired
-    private LogService logService;
+    private LogService  logService;
+    @Autowired
+    private SupplierDao supplierDao;
+    @Autowired
+    private UserDao userDao;
 
     private final static Gson GSON=new Gson();
 
@@ -64,7 +69,16 @@ public class ReturnListGoodsServiceImpl implements ReturnListGoodsService {
     public List<ReturnList> list(String returnNumber, Integer supplierId, Integer state, String sTime, String eTime) {
       List<ReturnList> returnLists=  this.returnListDao.list(returnNumber,supplierId,state,sTime,eTime);
         this.logService.save(new Log(Log.SELECT_ACTION,"退货单查询"));
-        return returnLists;
+        if(CollectionUtils.isEmpty(returnLists)){
+          return null;
+        }
+        return returnLists.stream().map(t -> {
+            t.setSupplierName(this.supplierDao.getSupplierById(t.getSupplierId()).getSupplierName());
+            t.setTrueName(this.userDao.getUserById(t.getUserId()).getTrueName());
+            return t;
+        }).collect(Collectors.toList());
+
+
     }
 
     @Override
