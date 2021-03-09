@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.jxc.dao.CustomerReturnListGoodsDao">
+
+    <resultMap id="BaseResultMap" type="com.atguigu.jxc.entity.CustomerReturnList">
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="customer_id" property="customerId" jdbcType="INTEGER" />
+        <result column="customer_return_list_id" property="customerReturnListId" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="return_number" property="returnNumber" jdbcType="VARCHAR" />
+        <result column="return_date" property="returnDate" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="amount_paid" property="amountPaid" jdbcType="FLOAT"/>
+        <result column="amount_payable" property="amountPayable" jdbcType="FLOAT"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMap02" type="com.atguigu.jxc.entity.CustomerReturnListGoods">
+        <result column="customer_return_list_goods_id" property="customerReturnListGoodsId" jdbcType="INTEGER" />
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+        <result column="goods_model" property="goodsModel" jdbcType="VARCHAR" />
+        <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR" />
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="total" property="total" jdbcType="DECIMAL" />
+        <result column="customer_return_list_id" property="customerReturnListId" jdbcType="INTEGER" />
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER" />
+    </resultMap>
+
+    <select id="queryListGoods" resultMap="BaseResultMap02">
+        select
+            customer_return_list_goods_id,goods_id,goods_code,goods_name,goods_model,goods_unit,goods_num,
+            price,total,customer_return_list_id,goods_type_id
+        from t_customer_return_list_goods
+        where customer_return_list_id = #{returnListId}
+    </select>
+
+
+    <delete id="deleteList">
+        delete from t_customer_return_list where customer_return_list_id=#{returnListId}
+    </delete>
+
+    <delete id="deleteListGoods">
+        delete from t_customer_return_list_goods where customer_return_list_id=#{returnListId}
+    </delete>
+
+
+    <select id="queryReturnList" parameterType="com.atguigu.jxc.domain.ReturnQueryParam"
+            resultMap="BaseResultMap">
+        select
+        customer_return_list_id,return_number,amount_paid,amount_payable,return_date,state,remarks,customer_id,user_id
+        from t_customer_return_list
+        <where>
+            <if test="returnNumber != '' and returnNumber != null">
+                return_number like concat('%',#{returnNumber},'%')
+            </if>
+            <if test="customerId != '' and customerId != null">
+                and customer_id=#{customerId}
+            </if>
+            <if test="state != '' and state != null">
+                and state=#{state}
+            </if>
+            and return_date &gt;= #{sTime} and return_date &lt;= #{eTime}
+        </where>
+    </select>
+
+    <insert id="saveCustomerReturnList" useGeneratedKeys="true" keyProperty="customerReturnListId"
+    parameterType="com.atguigu.jxc.entity.CustomerReturnList">
+
+        INSERT INTO t_customer_return_list
+            (return_number,customer_id,amount_payable,amount_paid,return_date,remarks,state,user_id)
+        VALUES
+            (#{returnNumber},#{customerId},#{amountPayable},#{amountPaid},#{returnDate},#{remarks},#{state},#{userId})
+    </insert>
+
+
+    <insert id="saveCustomerReturnListGoods" parameterType="com.atguigu.jxc.entity.CustomerReturnListGoods">
+
+        INSERT INTO t_customer_return_list_goods
+            (goods_id,goods_type_id,goods_code,goods_name,goods_model,goods_unit,price,goods_num,total,customer_return_list_id)
+        VALUES
+        <foreach collection="listGoods" item="CustomerReturnListGoods" separator=",">
+            (#{CustomerReturnListGoods.goodsId},#{CustomerReturnListGoods.goodsTypeId},
+            #{CustomerReturnListGoods.goodsCode},#{CustomerReturnListGoods.goodsName},
+            #{CustomerReturnListGoods.goodsModel},#{CustomerReturnListGoods.goodsUnit},
+            #{CustomerReturnListGoods.price},#{CustomerReturnListGoods.goodsNum},
+            #{CustomerReturnListGoods.total},#{CustomerReturnListGoods.customerReturnListId})
+        </foreach>
+
+    </insert>
+
+</mapper>

@@ -2,12 +2,14 @@ package com.atguigu.jxc.dao;
 
 import com.atguigu.jxc.entity.User;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * @description 用户
  */
+@Component
 public interface UserDao {
 
     // 根据用户名查找用户
